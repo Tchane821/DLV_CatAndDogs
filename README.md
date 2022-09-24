@@ -1,2 +1,6 @@
-# DLV_CatAndDogs
-Projets de DLV visant a apprendre a un réseaux de neurone a reconnaitre des chien et des chats.
+# DLV - AI for recognize Cat And Dogs 
+ 
+### *Thibault GARCIA, Martin BIRLOUEZ*
+
+Projets de DLV visant à apprendre à un réseau de neurone à reconnaitre 
+des chiens et des chats.
