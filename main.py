@@ -44,17 +44,7 @@ if not os.path.exists(workdir_path):
     valid_images_cats = images_cats_selected[-500:]
     valid_images_dogs = images_dogs_selected[-500:]
 
-    for img_train in train_images_cats:
-        shutil.copy(f"{path_images_src}/{img_train}", f"{training_path}/cats")
-    for img_train in train_images_dogs:
-        shutil.copy(f"{path_images_src}/{img_train}", f"{training_path}/dogs")
-
-    for img_train in eval_images_cats:
-        shutil.copy(f"{path_images_src}/{img_train}", f"{evaluate_path}/cats")
-    for img_train in eval_images_dogs:
-        shutil.copy(f"{path_images_src}/{img_train}", f"{evaluate_path}/dogs")
-
-    for img_train in valid_images_cats:
-        shutil.copy(f"{path_images_src}/{img_train}", f"{validation_path}/cats")
-    for img_train in eval_images_dogs:
-        shutil.copy(f"{path_images_src}/{img_train}", f"{validation_path}/dogs")
+    for step in ['train', 'eval', 'valid']:
+        for group in ['cats', 'dogs']:
+            for vars()[f"img_{step}"] in vars()[f"{step}_images_{group}"]:
+                shutil.copy(f"{path_images_src}/{vars()['img_' + step]}", f"{training_path}/{group}")
