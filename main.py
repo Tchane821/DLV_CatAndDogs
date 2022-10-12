@@ -1,11 +1,16 @@
 """
 Main file.
-Il contient le code de base à executé.
+Il contient le code de base à exécuter.
 """
 
 """
  ---------- LES IMPORTS ----------
 """
+
+"""
+ ---------- Organisation des répertoires de travail ----------
+"""
+# Création des dossiers de structure.
 import os
 import random as pif
 import shutil
@@ -14,26 +19,21 @@ from keras.dtensor import optimizers
 from keras.preprocessing.image import ImageDataGenerator
 from keras import layers, models
 import matplotlib.pyplot as plt
-
-"""
- ---------- Organisation des répertoires de travaille ----------
-"""
-# Création des dossiers de structure
 if not os.path.exists("./data"):
     os.mkdir("./data")
 if not os.path.exists("./data/savedmodels"):
     os.mkdir("./data/savedmodels")
 if not os.path.exists("./data/allImages"):
     os.mkdir("./data/allImages")
-    print("Veillez déposer toute les images de chat et de chien dans le dossier data/allImages")
-    print("Puis relancer le script")
+    print("Veuillez déposer toutes les images de chat et de chien dans le dossier data/allImages,")
+    print("puis relancez le script.")
     exit()
 
-# Fichier source des images.
+# Fichiers sources des images.
 path_images_src = "./data/allImages"
 path_savedmodels = "./data/savedmodels"
 
-# Les différents répertoires à créé.
+# Les différents répertoires à créer.
 workdir_path = "./data/workdir"
 train_path = f"{workdir_path}/train"
 valid_path = f"{workdir_path}/valid"
@@ -41,7 +41,7 @@ eval_path = f"{workdir_path}/eval"
 
 dirs = [train_path, valid_path, eval_path]
 
-# S'il n'existe pas deja alors nous les créons.
+# S'il n'existe pas déjà, alors nous les créons.
 if not os.path.exists(workdir_path):
     os.mkdir(workdir_path)
     for d in dirs:
@@ -49,19 +49,19 @@ if not os.path.exists(workdir_path):
             os.mkdir(d)
             os.mkdir(f"{d}/cats")
             os.mkdir(f"{d}/dogs")
-    # On récupère tous les noms de chaque image.
+    # On récupère le nom de chaque image.
     images_train_path = os.listdir(path_images_src)
-    # Nous savons qu'il y en a 25 000 et que 'os.listdir' tri par ordre alphabétique.
-    # Donc les 12500 premieres sont les chats et les 12500 suivantes sont les chiens.
+    # Nous savons qu'il y en a 25 000 et que 'os.listdir' trie par ordre alphabétique.
+    # Donc les 12 500 premières sont les chats et les 12 500 suivantes sont les chiens.
     images_cats = images_train_path[:12500]
     images_dogs = images_train_path[-12500:]
-    # Pour ne pas grader l'ordre alphabétique dns nos listes, nous les mélangeons.
+    # Pour ne pas grader l'ordre alphabétique dans nos listes, nous les mélangeons.
     pif.shuffle(images_dogs)
     pif.shuffle(images_cats)
-    # Parmi toutes les images de chien, nous en sélectionnons 2000 idem pour les chats.
+    # Parmi toutes les images de chien, nous en sélectionnons 2 000, idem pour les chats.
     images_cats_selected = images_cats[:2000]
     images_dogs_selected = images_dogs[:2000]
-    # Les 1000 premiere serons celles pour l'entrainement du modèle.
+    # Les 1 000 premières serons celles pour l'entraînement du modèle.
     train_images_cats = images_cats_selected[:1000]
     train_images_dogs = images_dogs_selected[:1000]
     # Les 500 suivantes seront pour son évaluation.
@@ -74,7 +74,8 @@ if not os.path.exists(workdir_path):
     for step in ['train', 'eval', 'valid']:
         for group in ['cats', 'dogs']:
             for image in vars()[f"{step}_images_{group}"]:
-                shutil.copy(f"{path_images_src}/{image}", f"{vars()[step + '_path']}/{group}")
+                shutil.copy(f"{path_images_src}/{image}",
+                            f"{vars()[step + '_path']}/{group}")
 
 """
  ---------- PRE-TRAITEMENT DES DONNEES ----------
@@ -82,7 +83,7 @@ if not os.path.exists(workdir_path):
 
 # Nous créons un 'ImageDataGenerator' qui permet de transformer un pool d'image en un plus grand.
 # Il va utiliser des transformations sur les images comme la rotation ou le zoom pour créer
-# plus d'image qu'il en possède à l'origine.
+# plus d'images qu'il n'en possède à l'origine.
 train_datagen = ImageDataGenerator(
     rescale=1 / 255,
     rotation_range=40,
@@ -90,7 +91,7 @@ train_datagen = ImageDataGenerator(
     height_shift_range=0.2,
     zoom_range=0.3
 )
-# Nous préciserons au générateur quel dossier utiliser ainsi que la taille des images souhaitez et enfin
+# Nous préciserons au générateur quel dossier utiliser ainsi que la taille des images souhaitée et enfin
 # la taille du batch.
 train_generator = train_datagen.flow_from_directory(
     train_path,
@@ -120,29 +121,32 @@ eval_generator = valid_datagen.flow_from_directory(
  ---------- LES MODELES ----------
 """
 
-# Ensuite vien nos deux modèles tester dans ce projet.
+# Ensuite viennent nos deux modèles testés dans ce projet.
 
-# Le premier ci-après est celui que nous avons réalisé et le suivant et celui qui utilise un réseau existant.
-# Les deux modèles sont résumé dans la trace d'exécution.
+# Le premier ci-après est celui que nous avons réalisé et le suivant est celui qui utilise un réseau existant.
+# Les deux modèles sont résumés dans la trace d'exécution.
 
 # Notre modèle ----------------
 model_own = models.Sequential(name="NotreModele")
 model_own.add(layers.Conv2D(filters=32, kernel_size=(4, 4), padding='same', activation='relu', strides=2,
                             input_shape=(150, 150, 3)))
 model_own.add(layers.MaxPooling2D(2, 2))
-model_own.add(layers.Conv2D(filters=64, kernel_size=(3, 3), padding='same', activation='relu', strides=2))
+model_own.add(layers.Conv2D(filters=64, kernel_size=(3, 3),
+              padding='same', activation='relu', strides=2))
 model_own.add(layers.MaxPooling2D(2, 2))
-model_own.add(layers.Conv2D(filters=128, kernel_size=(3, 3), padding='same', activation='relu', strides=2))
+model_own.add(layers.Conv2D(filters=128, kernel_size=(3, 3),
+              padding='same', activation='relu', strides=2))
 model_own.add(layers.MaxPooling2D(2, 2))
 model_own.add(layers.Flatten())
 model_own.add(layers.Dropout(0.5))
 model_own.add(layers.Dense(units=512, activation='relu'))
 model_own.add(layers.Dense(units=1, activation='sigmoid'))
 
-model_own.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(learning_rate=1e-4), metrics=['accuracy'])
+model_own.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(
+    learning_rate=1e-4), metrics=['accuracy'])
 
 # Le modèle VGG ----------------
-# Ici nous prenons comme base le réseau VGG16 cela va nous permettre d'utiliser un réseau très performant
+# Ici nous prenons comme base le réseau VGG16. Cela va nous permettre d'utiliser un réseau très performant
 # que nous allons spécifier.
 conv_base = VGG16(weights='imagenet',
                   include_top=False,
@@ -151,11 +155,11 @@ conv_base = VGG16(weights='imagenet',
 model_tun = models.Sequential(name="VGGModele")
 model_tun.add(conv_base)
 model_tun.add(layers.Flatten())
-# Ici on spécifie la sortie sera de 1 neurone pour 2 classes
+# Ici on spécifie que la sortie sera de 1 neurone pour 2 classes
 model_tun.add(layers.Dense(256, activation='relu'))
 model_tun.add(layers.Dense(1, activation='sigmoid'))
 
-# Ici on va verrouiller les poids qui appartienne a VGG pour n'entrainer que la spécification de sortie.
+# Ici on va verrouiller les poids qui appartiennent a VGG pour n'entraîner que la spécification de sortie.
 set_trainable = False
 for layer in conv_base.layers:
     if layer.name == 'block5_conv1':
@@ -165,20 +169,20 @@ for layer in conv_base.layers:
     else:
         layer.trainable = False
 
-model_tun.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(learning_rate=1e-4), metrics=['accuracy'])
-# Cette commande va afficher le résumer du modèle. Avec le nombre de poids, les couche, ect...
+model_tun.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(
+    learning_rate=1e-4), metrics=['accuracy'])
 
 mods = [model_own, model_tun]
-# Pour nos deux modèles, nous allons les entertainers avec le meme jeu de données et voir les résultats sur les courbes.
+# Pour nos deux modèles, nous allons les entraîner avec le même jeu de données et voir les résultats sur les courbes.
 for m in mods:
     print("\n", end='')
-    # Cette commande va afficher le résumer du modèle. Avec le nombre de poids, les couche, ect...
+    # Cette commande va afficher le résumé du modèle. Avec le nombre de poids, les couches, ect...
     m.summary()
-    # Pour éviter entertainer les modèles à chaque run du script, nous les sauvegardons.
+    # Pour éviter d'entraîner les modèles à chaque run du script, nous les sauvegardons.
     if not os.path.exists(f"{path_savedmodels}/{m.name}.h5"):
-        # L'entrainement a proprement parler.
+        # L'entraînement à proprement parler.
         print(f"Entrainement du modèle {m.name} --------------------------")
-        history = m.fit(train_generator,  # On utilise les générateurs d'image expliquer plus haut
+        history = m.fit(train_generator,  # On utilise les générateurs d'image expliqués plus haut
                         steps_per_epoch=len(train_generator),
                         epochs=50,  # Le nombre d'itérations total avant de conserver le modèle
                         validation_data=valid_generator,
@@ -186,7 +190,7 @@ for m in mods:
                         )
         m.save(f"{path_savedmodels}/{m.name}.h5")
 
-        # Ici nous créons des graphiques permet de représenter la courbe d'apprentissage du modèle.
+        # Ici nous créons des graphiques qui permettent de représenter la courbe d'apprentissage du modèle.
         acc = history.history['accuracy']
         val_acc = history.history['val_accuracy']
         loss = history.history['loss']
@@ -209,16 +213,17 @@ for m in mods:
         plt.savefig(f"{path_savedmodels}/figs/2-{m.name}.png", format='png')
 
     else:
-        # Dans cette partie nous évaluons le modèle charger avec les données d'évaluation.
+        # Dans cette partie nous évaluons le modèle chargé avec les données d'évaluation.
         print(f"Chargement du modèle {m.name} --------------------------")
         modele_load = models.load_model(f"{path_savedmodels}/{m.name}.h5")
         print("Evaluation du modèle:")
-        metrics = modele_load.evaluate(eval_generator, steps=10, batch_size=19, return_dict=True)
+        metrics = modele_load.evaluate(
+            eval_generator, steps=10, batch_size=19, return_dict=True)
         print(f"Loss: {metrics['loss']:.2f}")
         print(f"Accuracy: {metrics['accuracy']:.2f}")
         print("\n\n", end='')
-        
-        # Nous affichons également les figures sauvegarder.
+
+        # Nous affichons également les figures sauvegardées.
         plt.figure(f"1-{m.name}")
         fg1 = plt.imread(f"{path_savedmodels}/figs/1-{m.name}.png")
         plt.imshow(fg1)
