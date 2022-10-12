@@ -1,14 +1,23 @@
 """
 Main file.
 Il contient le code de base à exécuter.
+
+Pour organiser les fichiers avant l'exécution complète du script :
+Vous pouvez lancer le script une première fois.
+Il créera les différents repertoires dont le principal est 'data'.
+→ 'data' contiendra tous les fichiers et dossiers utilisés ou générés par le script.
+→ 'allImages' est vide au départ et il est nécessaire de déposer toutes les images de chat et de chien (les 25000)
+→ 'savemodels' permettra au script de sauvegarder les modèles et les différents graphiques.
+→ 'workdir' est le dossier de travail du script.
+
+-- ! --
+Vous n'avez qu'une chose à réaliser après la première exécution, c'est de remplir le dossier 'allImages' avec les images
+ de chiens et de chats de la base de données.
+-- ! --
 """
 
 """
  ---------- LES IMPORTS ----------
-"""
-
-"""
- ---------- Organisation des répertoires de travail ----------
 """
 # Création des dossiers de structure.
 import os
@@ -19,6 +28,11 @@ from keras.dtensor import optimizers
 from keras.preprocessing.image import ImageDataGenerator
 from keras import layers, models
 import matplotlib.pyplot as plt
+
+"""
+ ---------- Organisation des répertoires de travail ----------
+"""
+
 if not os.path.exists("./data"):
     os.mkdir("./data")
 if not os.path.exists("./data/savedmodels"):
